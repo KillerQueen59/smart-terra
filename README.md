@@ -1,36 +1,198 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Smart Terra 
 
-## Getting Started
+Smart Terra ( Definition ) 
 
-First, run the development server:
+## 🌟 Features
+
+- **Real-time Environmental Monitoring**: Track weather data (temperature, humidity, wind, rainfall) and water levels
+- **Interactive Dashboard**: Visual charts and status monitoring for AWS and AWL devices
+- **Geospatial Mapping**: Interactive maps with GeoTIFF and Shapefile support
+- **Device Management**: Monitor AWS (Automatic Weather Station) and AWL (Automatic Water Level) devices
+- **Data Export**: Generate reports in PDF, CSV, and Excel formats
+- **Multi-tenant Support**: Organize data by PT (Company) and Kebun (Plantation)
+- **Authentication**: Secure user authentication with Supabase
+
+## 🛠️ Tech Stack
+
+- **Frontend**: Next.js 15.2.4, React 19.1.0, TypeScript
+- **Backend**: Next.js API Routes
+- **Database**: PostgreSQL with Prisma ORM
+- **Authentication**: Supabase Auth
+- **UI/UX**: Tailwind CSS, Custom Components
+- **Charts**: Chart.js with react-chartjs-2
+- **Maps**: Leaflet with React-Leaflet
+- **Forms**: React Hook Form with Yup validation
+- **Geospatial**: GeoTIFF support with georaster
+
+## 📋 Prerequisites
+
+- Node.js 18.0.0 or higher
+- npm or yarn package manager
+- PostgreSQL database
+- Supabase account
+
+## 🚀 Quick Start
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/KillerQueen59/smart-terra.git
+cd smart-terra
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+# or
+yarn install
+```
+
+### 3. Environment Setup
+
+Create a `.env.local` file in the root directory:
+
+```bash
+cp .env.example .env.local
+```
+
+Configure your environment variables:
+
+```env
+# Database
+DATABASE_URL="postgresql://username:password@localhost:5432/smart_terra"
+DIRECT_URL="postgresql://username:password@localhost:5432/smart_terra"
+
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL="your_supabase_project_url"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="your_supabase_anon_key"
+```
+
+### 4. Database Setup
+
+```bash
+# Generate Prisma client
+npx prisma generate
+
+# Run database migrations
+npx prisma migrate dev
+
+# Seed database (optional)
+npm run db:seed
+```
+
+### 5. Start Development Server
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📁 Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+smart-terra/
+├── prisma/                 # Database schema and migrations
+│   ├── schema.prisma      # Database schema
+│   ├── seed.ts           # Database seeding
+│   └── migrations/       # Migration files
+├── public/               # Static assets
+│   ├── *.svg            # Icons and logos
+│   ├── *.gif            # Animation assets
+│   └── dummy/           # Sample data files
+├── src/
+│   ├── app/             # Next.js App Router
+│   │   ├── api/         # API routes
+│   │   ├── login/       # Authentication pages
+│   │   ├── map/         # Map visualization
+│   │   └── (web)/       # Protected routes
+│   │       ├── dashboard/  # Main dashboard
+│   │       ├── device/     # Device management
+│   │       └── sumber/     # Data source management
+│   ├── components/      # Reusable UI components
+│   │   ├── Chart/       # Chart components
+│   │   ├── Map/         # Map components
+│   │   ├── Sidebar/     # Navigation components
+│   │   └── Table/       # Data table components
+│   ├── contexts/        # React contexts
+│   ├── hooks/          # Custom React hooks
+│   ├── lib/            # External library configs
+│   ├── shared/         # Shared utilities
+│   ├── types/          # TypeScript definitions
+│   └── utils/          # Utility functions
+└── config files        # ESLint, Tailwind, etc.
+```
 
-## Learn More
+## 🎯 Available Scripts
 
-To learn more about Next.js, take a look at the following resources:
+- `npm run dev` - Start development server with Turbopack
+- `npm run build` - Build production application
+- `npm start` - Start production server
+- `npm run lint` - Run ESLint linting
+- `npm run db:seed` - Seed database with sample data
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🔧 Configuration
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Database Configuration
 
-## Deploy on Vercel
+The application uses Prisma as the ORM. Key models include:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **User**: Authentication and user management
+- **PT**: Company/Organization management
+- **Kebun**: Plantation/Location management
+- **AlatAWS**: Weather station devices
+- **AlatAWL**: Water level monitoring devices
+- **WeatherData**: Environmental measurements
+- **TMASData**: Water level measurements
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Authentication
+
+Supabase handles user authentication with features:
+
+- Email/password authentication
+- Session management
+- Role-based access control
+
+## 📊 Usage
+
+### Dashboard
+
+- Monitor device status with interactive charts
+- Filter data by PT (Company) and Kebun (Plantation)
+- View real-time device statistics
+
+### Device Management
+
+- **AWS Devices**: Monitor weather stations (temperature, humidity, wind, rainfall)
+- **AWL Devices**: Monitor water level sensors for flood detection
+
+### Map Visualization
+
+- Interactive maps with Leaflet
+- Upload and visualize GeoTIFF files
+- Support for Shapefile data overlays
+
+### Data Export
+
+- Generate daily and monthly reports
+- Export data in multiple formats (PDF, CSV, Excel)
+- Chart visualization exports
+
+## 🚀 Deployment
+
+### Production Build
+
+```bash
+npm run build
+npm start
+```
+
+### Database Migration
+
+```bash
+npx prisma migrate deploy
+```
+
