@@ -14,37 +14,41 @@
   --color-background: #ffffff;
   --color-foreground: #171717;
 
-  /* Primary Colors - Inspired by the green shield in your logo */
-  --color-primary-10: #f0fdf4;
-  --color-primary-20: #dcfce7;
-  --color-primary-30: #bbf7d0;
-  --color-primary-40: #4ade80;
-  --color-primary-50: #22c55e;
-  --color-primary-60: #16a34a;
-  --color-primary-70: #15803d;
-  --color-primary-80: #166534;
-  --color-primary-90: #14532d;
+  /* Primary Colors - Inspired by the golden/amber leaf in your logo */
+  --color-primary-10: #fffbeb;
+  --color-primary-20: #fef3c7;
+  --color-primary-30: #fde68a;
+  --color-primary-40: #fbbf24;
+  --color-primary-50: #f59e0b;
+  --color-primary-60: #d97706;
+  --color-primary-70: #b45309;
+  --color-primary-80: #92400e;
+  --color-primary-90: #78350f;
 
-  /* Secondary Colors - Inspired by the blue waves in your logo */
-  --color-secondary-10: #eff6ff;
-  --color-secondary-20: #dbeafe;
-  --color-secondary-30: #bfdbfe;
-  --color-secondary-40: #3b82f6;
-  --color-secondary-50: #2563eb;
-  --color-secondary-60: #1d4ed8;
-  --color-secondary-70: #1e40af;
-  --color-secondary-80: #1e3a8a;
-  --color-secondary-90: #1e3a8a;
+  /* Secondary Colors - Complementary green for tech/nature balance */
+  --color-secondary-10: #f0fdf4;
+  --color-secondary-20: #dcfce7;
+  --color-secondary-30: #bbf7d0;
+  --color-secondary-40: #4ade80;
+  --color-secondary-50: #22c55e;
+  --color-secondary-60: #16a34a;
+  --color-secondary-70: #15803d;
+  --color-secondary-80: #166534;
+  --color-secondary-90: #14532d;
 
   /* Red Colors */
   --color-red-10: #fef2f2;
   --color-red-60: #dc2626;
 
-  /* Yellow Colors */
-  --color-yellow-10: #fefce8;
-  --color-yellow-60: #ca8a04;
+  /* Yellow Colors - Enhanced to match logo */
+  --color-yellow-10: #fffbeb;
+  --color-yellow-20: #fef3c7;
+  --color-yellow-30: #fde68a;
+  --color-yellow-40: #fbbf24;
+  --color-yellow-50: #f59e0b;
+  --color-yellow-60: #d97706;
 
-  /* Success Colors - Enhanced to match logo green */
+  /* Success Colors - Harmonized with secondary green */
   --color-success-10: #f0fdf4;
   --color-success-20: #dcfce7;
   --color-success-30: #bbf7d0;
@@ -86,15 +90,15 @@
   --color-indicator-purple: #9c29b2;
   --color-indicator-deep-purple: #663cb5;
   --color-indicator-indigo: #4153b5;
-  --color-indicator-blue: #2563eb; /* Updated to match secondary blue */
+  --color-indicator-blue: #3b82f6;
   --color-indicator-light-blue: #02a9f7;
   --color-indicator-cyan: #01bcd6;
   --color-indicator-teal: #039789;
-  --color-indicator-green: #22c55e; /* Updated to match primary green */
+  --color-indicator-green: #22c55e; /* Updated to match secondary green */
   --color-indicator-light-green: #4ade80;
   --color-indicator-lime: #cbdd38;
-  --color-indicator-yellow: #ffe93d;
-  --color-indicator-amber: #fcc005;
+  --color-indicator-yellow: #f59e0b; /* Updated to match primary golden */
+  --color-indicator-amber: #d97706; /* Updated to match logo amber */
   --color-indicator-orange: #ff9800;
   --color-indicator-deep-orange: #fe5823;
   --color-indicator-brown: #7b5649;
@@ -103,10 +107,11 @@
   --color-indicator-black: #373232;
 
   /* New Logo-specific Colors */
+  --color-logo-golden: #f59e0b;
+  --color-logo-amber: #d97706;
   --color-logo-green: #22c55e;
-  --color-logo-blue: #2563eb;
-  --color-logo-dark-green: #15803d;
-  --color-logo-dark-blue: #1e40af;
+  --color-logo-dark-golden: #b45309;
+  --color-logo-light-golden: #fbbf24;
 
   /* Typography */
   --font-family-inter: Inter, system-ui, sans-serif;
@@ -198,28 +203,49 @@
 }
 
 /* Logo-inspired utility classes */
+.bg-logo-golden {
+  background-color: var(--color-logo-golden);
+}
+
+.bg-logo-amber {
+  background-color: var(--color-logo-amber);
+}
+
 .bg-logo-green {
   background-color: var(--color-logo-green);
 }
 
-.bg-logo-blue {
-  background-color: var(--color-logo-blue);
+.text-logo-golden {
+  color: var(--color-logo-golden);
+}
+
+.text-logo-amber {
+  color: var(--color-logo-amber);
 }
 
 .text-logo-green {
   color: var(--color-logo-green);
 }
 
-.text-logo-blue {
-  color: var(--color-logo-blue);
+.border-logo-golden {
+  border-color: var(--color-logo-golden);
+}
+
+.border-logo-amber {
+  border-color: var(--color-logo-amber);
 }
 
 .border-logo-green {
   border-color: var(--color-logo-green);
 }
 
-.border-logo-blue {
-  border-color: var(--color-logo-blue);
+/* Gradient utility classes inspired by logo */
+.bg-gradient-logo {
+  background: linear-gradient(135deg, var(--color-logo-light-golden), var(--color-logo-amber));
+}
+
+.bg-gradient-tech-nature {
+  background: linear-gradient(135deg, var(--color-logo-golden), var(--color-logo-green));
 }
 
 /* Dark mode */

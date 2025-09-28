@@ -6,9 +6,9 @@ import { Providers } from "@/components/Providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Flood Guard",
+  title: "Smart Terra",
   icons: {
-    icon: "/flood_guard_logo.svg",
+    icon: "/smart_terra_logo.svg",
   },
 };
 

@@ -44,8 +44,8 @@ export default function Register() {
       <ToastContainer />
       <div className="flex space-x-1.5 mb-12 w-fit mx-auto">
         <Image
-          src="/flood_guard_logo.svg"
-          alt="Flood Guard Logo"
+          src="/smart_terra_logo.svg"
+          alt="Smart Terra Logo"
           width={135}
           height={84}
           priority
