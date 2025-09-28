@@ -59,13 +59,10 @@ cp .env.example .env.local
 Configure your environment variables:
 
 ```env
-# Database
-DATABASE_URL="postgresql://username:password@localhost:5432/smart_terra"
-DIRECT_URL="postgresql://username:password@localhost:5432/smart_terra"
-
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL="your_supabase_project_url"
-NEXT_PUBLIC_SUPABASE_ANON_KEY="your_supabase_anon_key"
+DATABASE_URL="postgresql://postgres.aybdxfptafsnywznbvpc:oyjA7IsVC43APBWm@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
+DIRECT_URL="postgresql://postgres.aybdxfptafsnywznbvpc:oyjA7IsVC43APBWm@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres"
+NEXT_PUBLIC_SUPABASE_URL=https://aybdxfptafsnywznbvpc.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5YmR4ZnB0YWZzbnl3em5idnBjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4NzYwMDYsImV4cCI6MjA3NDQ1MjAwNn0.jv312y5hm6zzNfqBrCoEbipHJ3ulzo4CJrNASiaHZ40
 ```
 
 ### 4. Database Setup
