@@ -46,6 +46,8 @@ model AlatAWS {
   signal      Int
   sensor      Int
   status      String
+  latitude    Float? // Added latitude field
+  longitude   Float? // Added longitude field
   ptId        String
   kebunId     String
   pt          PT            @relation(fields: [ptId], references: [id])
@@ -64,6 +66,8 @@ model AlatAWL {
   status     String
   type       String // "TMAS" for water surface data, "TMAT" for water table data
   note       String
+  latitude   Float? // Added latitude field
+  longitude  Float? // Added longitude field
   ptId       String
   kebunId    String
   pt         PT         @relation(fields: [ptId], references: [id])

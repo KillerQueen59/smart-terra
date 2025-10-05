@@ -41,6 +41,27 @@ const getTargetDateTime = (hour: number): Date => {
   return new Date(2025, 8, 25, hour, 0, 0); // September 25, 2025 at specified hour
 };
 
+// Helper function to generate random coordinates within the polygon boundary
+const generateRandomCoordinatesInPolygon = (): {
+  latitude: number;
+  longitude: number;
+} => {
+  // Updated bounding box of the polygon based on full DefaultBoundary.ts analysis
+  // Latitude ranges from approximately -1.45 (north) to -1.52 (south)
+  // Longitude ranges from approximately 132.23 (west) to 132.33 (east)
+  const minLat = -1.52;
+  const maxLat = -1.45;
+  const minLng = 132.23;
+  const maxLng = 132.33;
+
+  // Generate random coordinates within the expanded bounding box
+  // This will better distribute markers across the entire polygon area
+  const latitude = randomBetween(minLat, maxLat);
+  const longitude = randomBetween(minLng, maxLng);
+
+  return { latitude, longitude };
+};
+
 async function main() {
   console.log("Starting comprehensive seed...");
 
@@ -153,6 +174,7 @@ async function main() {
   const createdAWSDevices = []; // Store created devices with their IDs and types
 
   for (const config of awsDevices) {
+    const coordinates = generateRandomCoordinatesInPolygon();
     const awsData = {
       id: awsCounter.toString(),
       name: `AWS-${awsCounter.toString().padStart(3, "0")}`,
@@ -162,6 +184,8 @@ async function main() {
       signal: config.signal,
       sensor: config.sensorOrData,
       status: config.status,
+      latitude: coordinates.latitude,
+      longitude: coordinates.longitude,
       ptId: config.ptId,
       kebunId: config.kebunId,
     };
@@ -215,6 +239,7 @@ async function main() {
 
   for (const config of awlDevices) {
     const notes = notesByStatus[config.status];
+    const coordinates = generateRandomCoordinatesInPolygon();
     const awlData = {
       id: awlCounter.toString(),
       name: `${config.awlType}-${awlCounter.toString().padStart(3, "0")}`,
@@ -230,6 +255,8 @@ async function main() {
       status: config.status,
       type: config.awlType!,
       note: notes[randomInt(0, notes.length - 1)],
+      latitude: coordinates.latitude,
+      longitude: coordinates.longitude,
       ptId: config.ptId,
       kebunId: config.kebunId,
     };

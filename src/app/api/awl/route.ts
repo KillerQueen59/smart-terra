@@ -64,6 +64,8 @@ export const GET = async (request: Request) => {
       kebunName: device.kebun.name,
       pt: device.pt,
       kebun: device.kebun,
+      latitude: device.latitude,
+      longitude: device.longitude,
     }));
 
     return NextResponse.json({
