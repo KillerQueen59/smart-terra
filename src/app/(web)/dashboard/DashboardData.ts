@@ -42,7 +42,7 @@ export const getDashboard = async (filters?: DashboardFilters) => {
 export const getAWLDashboard = async (
   filters?: Omit<DashboardFilters, "deviceType">
 ) => {
-  return getDashboard({ ...filters, deviceType: "AWL" });
+  return getDashboard({ ...filters, deviceType: "TMAS" });
 };
 
 // Get AWS dashboard data specifically
@@ -50,6 +50,13 @@ export const getAWSDashboard = async (
   filters?: Omit<DashboardFilters, "deviceType">
 ) => {
   return getDashboard({ ...filters, deviceType: "AWS" });
+};
+
+// Get TMAT dashboard data specifically
+export const getTMATDashboard = async (
+  filters?: Omit<DashboardFilters, "deviceType">
+) => {
+  return getDashboard({ ...filters, deviceType: "TMAT" });
 };
 
 export const getPt = async () => {

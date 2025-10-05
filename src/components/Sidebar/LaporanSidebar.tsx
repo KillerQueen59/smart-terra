@@ -10,7 +10,11 @@ import {
   DocumentReport,
 } from "heroicons-react";
 import clsx from "clsx";
-import { faCloudBolt, faBridgeWater } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCloudBolt,
+  faBridgeWater,
+  faDroplet,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 type LaporanSidebarProps = {
@@ -48,8 +52,7 @@ export default function LaporanSidebar({
             if (!isOpen) {
               setIsOpen(true);
             }
-          }}
-        >
+          }}>
           <DocumentReport
             className={clsx("h-[20px] w-[20px]", {
               "text-primary-60":
@@ -105,8 +108,7 @@ export default function LaporanSidebar({
               }`}
               onClick={() => {
                 setShowDevice(!showDevice);
-              }}
-            >
+              }}>
               <CogOutline
                 className={clsx("h-[20px] w-[20px]", {
                   "text-primary-60": pathname.includes("/device"),
@@ -142,9 +144,8 @@ export default function LaporanSidebar({
             </div>
             <div
               className={`overflow-hidden transition-[max-height] duration-200 ease-in ${
-                showDevice ? "max-h-[150px]" : "max-h-0"
-              }`}
-            >
+                showDevice ? "max-h-[200px]" : "max-h-0"
+              }`}>
               <RouterComponent
                 parentPathname={`${pathname}`}
                 pathname={`/device/aws`}
@@ -164,9 +165,8 @@ export default function LaporanSidebar({
             </div>
             <div
               className={`overflow-hidden transition-[max-height] duration-200 ease-in ${
-                showDevice ? "max-h-[150px]" : "max-h-0"
-              }`}
-            >
+                showDevice ? "max-h-[200px]" : "max-h-0"
+              }`}>
               <RouterComponent
                 parentPathname={`${pathname}`}
                 pathname={`/device/tmas`}
@@ -177,6 +177,27 @@ export default function LaporanSidebar({
                     icon={faBridgeWater}
                     color={
                       pathname.includes("/device/tmas") ? "#1781BF" : "#374151"
+                    }
+                  />
+                }
+                isOpen={isOpen}
+                customClass="pl-16 text-sm"
+              />
+            </div>
+            <div
+              className={`overflow-hidden transition-[max-height] duration-200 ease-in ${
+                showDevice ? "max-h-[200px]" : "max-h-0"
+              }`}>
+              <RouterComponent
+                parentPathname={`${pathname}`}
+                pathname={`/device/tmat`}
+                router={router}
+                label={"TMAT"}
+                icon={
+                  <FontAwesomeIcon
+                    icon={faDroplet}
+                    color={
+                      pathname.includes("/device/tmat") ? "#1781BF" : "#374151"
                     }
                   />
                 }

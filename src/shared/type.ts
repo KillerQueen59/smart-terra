@@ -23,6 +23,7 @@ export type AlatAWL = {
   signal: number;
   data: number;
   status: string;
+  type: string; // AWL device type: "TMAS" or "TMAT"
   note: string;
 };
 

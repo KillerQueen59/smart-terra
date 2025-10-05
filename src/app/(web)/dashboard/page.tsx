@@ -17,6 +17,7 @@ export default function Dashboard() {
     kebuns,
     awlDashboard, // <- Note: changed from 'dashboard' to 'awlDashboard'
     awsDashboard, // <- Note: changed from 'dashboard' to 'awsDashboard'
+    tmatDashboard, // <- TMAT dashboard data
     showModal,
     loading,
     setShowModal,
@@ -76,6 +77,34 @@ export default function Dashboard() {
               className="h-full"
               onClick={() => {
                 console.log("AWL clicked");
+              }}
+              subTitle={"Total"}
+              onStatusClicked={() => {
+                router.push("/sumber/awl");
+              }}
+              onLaporanHarianClicked={() => {
+                setShowModal(true);
+              }}
+              onLaporanBulananClicked={() => {
+                setShowModal(true);
+              }}
+            />
+          )}
+        </div>
+        <div className="col-span-4">
+          {loading ? (
+            <div className="h-full flex items-center justify-center bg-white rounded-lg shadow">
+              <div className="text-gray-500">Loading TMAT data...</div>
+            </div>
+          ) : (
+            <DoughnutChart
+              title="AWL TMAT (Tinggi Muka Air Tanah)"
+              data={tmatDashboard} // <- Using TMAT-specific data
+              below
+              noLine
+              className="h-full"
+              onClick={() => {
+                console.log("TMAT clicked");
               }}
               subTitle={"Total"}
               onStatusClicked={() => {

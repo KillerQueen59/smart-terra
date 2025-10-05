@@ -34,6 +34,7 @@ model Kebun {
   dashboards  AlatDashboard[]
   weatherData WeatherData[]
   tmasData    TMASData[]
+  tmatData    TMATData[]
 }
 
 model AlatAWS {
@@ -61,19 +62,21 @@ model AlatAWL {
   signal     Int
   data       Int
   status     String
+  type       String // "TMAS" for water surface data, "TMAT" for water table data
   note       String
   ptId       String
   kebunId    String
   pt         PT         @relation(fields: [ptId], references: [id])
   kebun      Kebun      @relation(fields: [kebunId], references: [id])
   tmasData   TMASData[]
+  tmatData   TMATData[]
 }
 
 model AlatDashboard {
   id         String @id @default(uuid())
   ptId       String
   kebunId    String
-  deviceType String // "AWL" or "AWS"
+  deviceType String // "AWS", "TMAS", or "TMAT" (TMAS and TMAT are AWL device types)
   rusak      Int
   idle       Int
   active     Int
@@ -113,5 +116,16 @@ model TMASData {
   awlId      String
   kebun      Kebun    @relation(fields: [kebunId], references: [id])
   alatAWL    AlatAWL  @relation(fields: [awlId], references: [id])
+  createdAt  DateTime @default(now())
+}
+
+model TMATData {
+  id         Int      @id @default(autoincrement())
+  tanggal    DateTime
+  ketinggian Float // Water table level as percentage
+  kebunId    String
+  awlId      String // Back to awlId since TMAT is handled by AWL devices
+  kebun      Kebun    @relation(fields: [kebunId], references: [id])
+  alatAWL    AlatAWL  @relation(fields: [awlId], references: [id]) // Back to alatAWL
   createdAt  DateTime @default(now())
 }

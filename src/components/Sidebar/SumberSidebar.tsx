@@ -88,7 +88,7 @@ export default function SumberSidebar({
         <>
           <div
             className={`overflow-hidden transition-[max-height] duration-200 ease-in ${
-              showManagement ? "max-h-[150px]" : "max-h-0"
+              showManagement ? "max-h-[200px]" : "max-h-0"
             }`}>
             <RouterComponent
               parentPathname={`${pathname}`}
@@ -101,13 +101,26 @@ export default function SumberSidebar({
           </div>
           <div
             className={`overflow-hidden transition-[max-height] duration-200 ease-in ${
-              showManagement ? "max-h-[150px]" : "max-h-0"
+              showManagement ? "max-h-[200px]" : "max-h-0"
             }`}>
             <RouterComponent
               parentPathname={`${pathname}`}
               pathname={`/sumber/awl`}
               router={router}
               label={"AWL"}
+              isOpen={isOpen}
+              customClass="pl-12 text-sm"
+            />
+          </div>
+          <div
+            className={`overflow-hidden transition-[max-height] duration-200 ease-in ${
+              showManagement ? "max-h-[200px]" : "max-h-0"
+            }`}>
+            <RouterComponent
+              parentPathname={`${pathname}`}
+              pathname={`/sumber/tmat`}
+              router={router}
+              label={"TMAT"}
               isOpen={isOpen}
               customClass="pl-12 text-sm"
             />

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export const getPt = async () => {
   try {
     const res = await fetch("/api/dashboard/pt");
@@ -38,29 +37,27 @@ export const getDevice = async () => {
   }
 };
 
-// Updated to use the AWL API directly for better type handling
-export const getAWL = async (filters?: {
+export const getTmat = async (filters?: {
   pt?: string;
   kebun?: string;
-  status?: string;
-  type?: string;
+  device?: string;
+  date?: string;
 }) => {
   try {
     const params = new URLSearchParams();
 
     if (filters?.pt) params.append("pt", filters.pt);
     if (filters?.kebun) params.append("kebun", filters.kebun);
-    if (filters?.status) params.append("status", filters.status);
-    if (filters?.type) params.append("type", filters.type);
+    if (filters?.device) params.append("device", filters.device);
+    if (filters?.date) params.append("date", filters.date);
 
-    const url = `/api/awl${params.toString() ? "?" + params.toString() : ""}`;
+    const url = `/api/tmat${params.toString() ? "?" + params.toString() : ""}`;
 
     const res = await fetch(url);
     if (!res.ok) {
       throw new Error("Failed to fetch data");
     }
     const result = await res.json();
-
     return result;
   } catch (err) {
     console.log(err);

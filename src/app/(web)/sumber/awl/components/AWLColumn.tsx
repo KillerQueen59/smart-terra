@@ -45,6 +45,27 @@ const AWLColumn = () => {
         minSize: Math.round((global?.window && window.innerHeight - 55) * 0.2),
       },
       {
+        accessorKey: "type",
+        header: () => (
+          <div className="w-full text-left text-xs text-gray-80">Type</div>
+        ),
+        cell: (info) => (
+          <div className="text-sm font-medium">
+            <span
+              className={`px-2 py-1 rounded-full text-xs ${
+                info.row.original.type === "TMAS"
+                  ? "bg-blue-100 text-blue-800"
+                  : info.row.original.type === "TMAT"
+                  ? "bg-green-100 text-green-800"
+                  : "bg-gray-100 text-gray-800"
+              }`}>
+              {info.row.original.type ?? "-"}
+            </span>
+          </div>
+        ),
+        minSize: Math.round((global?.window && window.innerHeight - 55) * 0.15),
+      },
+      {
         accessorKey: "createdAt",
         header: () => (
           <div className="w-full text-left text-xs text-gray-80">
@@ -52,7 +73,18 @@ const AWLColumn = () => {
           </div>
         ),
         minSize: Math.round((global?.window && window.innerHeight - 55) * 0.2),
-        cell: (info) => <div>{date(info.row.original.startDate ?? "")}</div>,
+        cell: (info) => {
+          const startDate = info.row.original.startDate;
+          // Handle potential invalid date strings
+          if (!startDate || startDate === "" || startDate === "Invalid Date") {
+            return <div>-</div>;
+          }
+          try {
+            return <div>{date(startDate)}</div>;
+          } catch {
+            return <div>-</div>;
+          }
+        },
       },
       {
         accessorKey: "battery",

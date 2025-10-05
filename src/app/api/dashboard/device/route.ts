@@ -48,10 +48,14 @@ export async function GET() {
         id: device.id,
         name: device.name,
         detailName: device.detailName,
-        type: "AWL",
+        type: device.type, // Use the actual type field from the AWL device
+        awlType: device.type, // Add AWL specific type (TMAS or TMAT)
         status: device.status,
         battery: device.battery,
         signal: device.signal,
+        data: device.data,
+        note: device.note,
+        startDate: device.startDate,
         kebunId: device.kebunId,
         kebunName: device.kebun.name,
         ptId: device.ptId,

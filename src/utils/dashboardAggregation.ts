@@ -17,7 +17,7 @@ export interface DashboardAggregationResult {
 export interface DashboardFilters {
   pt?: string;
   kebun?: string;
-  deviceType?: string; // "AWL" or "AWS"
+  deviceType?: string; // "AWL", "AWS", or "TMAT"
 }
 
 // Function to recalculate and update dashboard aggregations
@@ -108,6 +108,49 @@ export async function updateDashboardAggregations() {
           kebunId: kebun.id,
           deviceType: "AWS",
           ...awsStatusCounts,
+        },
+      });
+
+      // Count AWL devices that have TMAT data (for TMAT dashboard)
+      const tmatStats = await prisma.alatAWL.groupBy({
+        by: ["status"],
+        where: {
+          kebunId: kebun.id,
+          tmatData: {
+            some: {}, // Only include AWL devices that have TMAT data
+          },
+        },
+        _count: {
+          status: true,
+        },
+      });
+
+      // Calculate TMAT totals
+      const tmatStatusCounts = { rusak: 0, idle: 0, active: 0, alert: 0 };
+      tmatStats.forEach((stat) => {
+        if (stat.status in tmatStatusCounts) {
+          tmatStatusCounts[stat.status as keyof typeof tmatStatusCounts] +=
+            stat._count.status;
+        }
+      });
+
+      // Update or create TMAT dashboard record
+      await prisma.alatDashboard.upsert({
+        where: {
+          ptId_kebunId_deviceType: {
+            ptId: kebun.ptId,
+            kebunId: kebun.id,
+            deviceType: "TMAT",
+          },
+        },
+        update: {
+          ...tmatStatusCounts,
+        },
+        create: {
+          ptId: kebun.ptId,
+          kebunId: kebun.id,
+          deviceType: "TMAT",
+          ...tmatStatusCounts,
         },
       });
     }

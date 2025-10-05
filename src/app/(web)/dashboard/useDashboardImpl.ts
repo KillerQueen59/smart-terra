@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   getAWLDashboard,
   getAWSDashboard,
+  getTMATDashboard,
   getKebun,
   getPt,
 } from "./DashboardData";
@@ -22,6 +23,7 @@ export const useDashboardImpl = () => {
   const [kebuns, setKebuns] = useState<Options[]>([]);
   const [awlDashboards, setAwlDashboards] = useState([]);
   const [awsDashboards, setAwsDashboards] = useState([]);
+  const [tmatDashboards, setTmatDashboards] = useState([]);
 
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -94,11 +96,16 @@ export const useDashboardImpl = () => {
 
     console.log("Fetching dashboard with filters:", filters);
 
-    // Fetch both AWL and AWS data simultaneously
-    Promise.all([getAWLDashboard(filters), getAWSDashboard(filters)])
-      .then(([awlRes, awsRes]) => {
+    // Fetch AWL, AWS, and TMAT data simultaneously
+    Promise.all([
+      getAWLDashboard(filters),
+      getAWSDashboard(filters),
+      getTMATDashboard(filters),
+    ])
+      .then(([awlRes, awsRes, tmatRes]) => {
         console.log("AWL Response:", awlRes);
         console.log("AWS Response:", awsRes);
+        console.log("TMAT Response:", tmatRes);
 
         if (awlRes?.data) {
           setAwlDashboards(awlRes.data);
@@ -110,11 +117,17 @@ export const useDashboardImpl = () => {
         } else {
           setAwsDashboards([]);
         }
+        if (tmatRes?.data) {
+          setTmatDashboards(tmatRes.data);
+        } else {
+          setTmatDashboards([]);
+        }
       })
       .catch((error) => {
         console.error("Error fetching dashboard data:", error);
         setAwlDashboards([]);
         setAwsDashboards([]);
+        setTmatDashboards([]);
       })
       .finally(() => {
         setIsLoading(false);
@@ -137,6 +150,14 @@ export const useDashboardImpl = () => {
     }
     return [];
   }, [awsDashboards, kebun]);
+
+  const tmatDashboard = useMemo(() => {
+    console.log("Converting TMAT dashboards:", tmatDashboards);
+    if (tmatDashboards.length > 0) {
+      return convertToLabelValue(tmatDashboards, kebun);
+    }
+    return [];
+  }, [tmatDashboards, kebun]);
 
   // Handle PT change
   const handlePtChange = useCallback(
@@ -179,6 +200,7 @@ export const useDashboardImpl = () => {
     kebuns,
     awlDashboard,
     awsDashboard,
+    tmatDashboard,
     showModal,
     loading: isLoading,
     setShowModal,

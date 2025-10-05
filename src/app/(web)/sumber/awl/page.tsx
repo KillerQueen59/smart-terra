@@ -14,12 +14,14 @@ export default function AWL() {
     pt,
     kebun,
     status,
+    type,
     pts,
     kebuns,
     loading,
     setPt,
     setKebun,
     setStatus,
+    setType,
   } = useAwlImpl();
 
   // Status options based on your seed data
@@ -29,6 +31,13 @@ export default function AWL() {
     { label: "Alert", value: "alert" },
     { label: "Rusak", value: "rusak" },
     { label: "Idle", value: "idle" },
+  ];
+
+  // Type options for AWL devices
+  const typeOptions = [
+    { label: "All", value: "" },
+    { label: "TMAS", value: "TMAS" },
+    { label: "TMAT", value: "TMAT" },
   ];
 
   return (
@@ -61,6 +70,15 @@ export default function AWL() {
                 }}
                 name={"status"}
                 label={"Status"}
+              />
+              <CustomSelectField
+                options={typeOptions}
+                value={type === "All" ? "" : type}
+                onChange={(selectedOption: string) => {
+                  setType(selectedOption);
+                }}
+                name={"type"}
+                label={"Type"}
               />
               <CustomSelectField
                 options={pts}
@@ -112,6 +130,9 @@ export default function AWL() {
                 <div className="flex flex-wrap gap-2">
                   <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
                     Status: {status}
+                  </span>
+                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
+                    Type: {type}
                   </span>
                   <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
                     PT: {pt}

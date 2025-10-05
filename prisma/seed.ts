@@ -4,12 +4,14 @@ const prisma = new PrismaClient();
 
 // Type definitions
 type DeviceStatus = "active" | "alert" | "rusak" | "idle";
+type AWLType = "TMAS" | "TMAT";
 
 interface DeviceConfig {
   kebunId: string;
   ptId: string;
   deviceNum: number;
   isAWS: boolean;
+  awlType?: AWLType;
   status: DeviceStatus;
   battery: number;
   signal: number;
@@ -43,6 +45,7 @@ async function main() {
   console.log("Starting comprehensive seed...");
 
   // Clear existing data
+  await prisma.tMATData.deleteMany();
   await prisma.tMASData.deleteMany();
   await prisma.weatherData.deleteMany();
   await prisma.alatDashboard.deleteMany();
@@ -94,6 +97,11 @@ async function main() {
 
     for (let deviceNum = 1; deviceNum <= 8; deviceNum++) {
       const isAWS = Math.random() > 0.5; // 50% chance for AWS vs AWL
+      const awlType: AWLType | undefined = !isAWS
+        ? Math.random() > 0.5
+          ? "TMAS"
+          : "TMAT" // 50% chance for TMAS vs TMAT for AWL devices
+        : undefined;
       const status: DeviceStatus = statusOptions[randomInt(0, 3)];
 
       // Adjust device stats based on status
@@ -127,6 +135,7 @@ async function main() {
         ptId,
         deviceNum,
         isAWS,
+        awlType,
         status,
         battery,
         signal,
@@ -141,7 +150,7 @@ async function main() {
   let awsCounter = 1;
   const awsDevices = deviceConfigs.filter((config) => config.isAWS);
 
-  const createdAWSDevices = []; // Store created devices with their IDs
+  const createdAWSDevices = []; // Store created devices with their IDs and types
 
   for (const config of awsDevices) {
     const awsData = {
@@ -208,13 +217,18 @@ async function main() {
     const notes = notesByStatus[config.status];
     const awlData = {
       id: awlCounter.toString(),
-      name: `AWL-${awlCounter.toString().padStart(3, "0")}`,
-      detailName: `Water Level Monitor ${config.kebunId}-${config.deviceNum}`,
+      name: `${config.awlType}-${awlCounter.toString().padStart(3, "0")}`,
+      detailName: `${
+        config.awlType === "TMAS"
+          ? "Water Surface Monitor"
+          : "Water Table Monitor"
+      } ${config.kebunId}-${config.deviceNum}`,
       startDate: config.startDate,
       battery: config.battery,
       signal: config.signal,
       data: config.sensorOrData,
       status: config.status,
+      type: config.awlType!,
       note: notes[randomInt(0, notes.length - 1)],
       ptId: config.ptId,
       kebunId: config.kebunId,
@@ -228,6 +242,7 @@ async function main() {
       kebunId: awlData.kebunId,
       ptId: awlData.ptId,
       status: awlData.status,
+      type: awlData.type, // Store the AWL type (TMAS or TMAT)
     });
 
     awlCounter++;
@@ -245,25 +260,28 @@ async function main() {
   for (const combination of uniqueCombinations) {
     const [ptId, kebunId] = combination.split("-");
 
-    // Get AWL devices for this PT-Kebun combination
-    const awlDevicesInKebun = createdAWLDevices.filter(
-      (device) => device.ptId === ptId && device.kebunId === kebunId
-    );
-
-    // Get AWS devices for this PT-Kebun combination
+    // Get AWS devices for this PT-Kebun combination (only for weather data)
     const awsDevicesInKebun = createdAWSDevices.filter(
       (device) => device.ptId === ptId && device.kebunId === kebunId
     );
 
-    // Calculate AWL status counts
-    const awlStatusCounts = {
-      rusak: awlDevicesInKebun.filter((d) => d.status === "rusak").length,
-      idle: awlDevicesInKebun.filter((d) => d.status === "idle").length,
-      active: awlDevicesInKebun.filter((d) => d.status === "active").length,
-      alert: awlDevicesInKebun.filter((d) => d.status === "alert").length,
-    };
+    // Get TMAS devices (AWL devices with type TMAS) for this PT-Kebun combination
+    const tmasDevicesInKebun = createdAWLDevices.filter(
+      (device) =>
+        device.ptId === ptId &&
+        device.kebunId === kebunId &&
+        device.type === "TMAS"
+    );
 
-    // Calculate AWS status counts
+    // Get TMAT devices (AWL devices with type TMAT) for this PT-Kebun combination
+    const tmatDevicesInKebun = createdAWLDevices.filter(
+      (device) =>
+        device.ptId === ptId &&
+        device.kebunId === kebunId &&
+        device.type === "TMAT"
+    );
+
+    // Calculate AWS status counts (for weather data)
     const awsStatusCounts = {
       rusak: awsDevicesInKebun.filter((d) => d.status === "rusak").length,
       idle: awsDevicesInKebun.filter((d) => d.status === "idle").length,
@@ -271,20 +289,23 @@ async function main() {
       alert: awsDevicesInKebun.filter((d) => d.status === "alert").length,
     };
 
-    // Create AWL dashboard record
-    await prisma.alatDashboard.create({
-      data: {
-        ptId,
-        kebunId,
-        deviceType: "AWL",
-        rusak: awlStatusCounts.rusak,
-        idle: awlStatusCounts.idle,
-        active: awlStatusCounts.active,
-        alert: awlStatusCounts.alert,
-      },
-    });
+    // Calculate TMAS status counts (AWL devices for water surface data)
+    const tmasStatusCounts = {
+      rusak: tmasDevicesInKebun.filter((d) => d.status === "rusak").length,
+      idle: tmasDevicesInKebun.filter((d) => d.status === "idle").length,
+      active: tmasDevicesInKebun.filter((d) => d.status === "active").length,
+      alert: tmasDevicesInKebun.filter((d) => d.status === "alert").length,
+    };
 
-    // Create AWS dashboard record
+    // Calculate TMAT status counts (AWL devices for water table data)
+    const tmatStatusCounts = {
+      rusak: tmatDevicesInKebun.filter((d) => d.status === "rusak").length,
+      idle: tmatDevicesInKebun.filter((d) => d.status === "idle").length,
+      active: tmatDevicesInKebun.filter((d) => d.status === "active").length,
+      alert: tmatDevicesInKebun.filter((d) => d.status === "alert").length,
+    };
+
+    // Create AWS dashboard record (for weather data)
     await prisma.alatDashboard.create({
       data: {
         ptId,
@@ -297,12 +318,41 @@ async function main() {
       },
     });
 
+    // Create TMAS dashboard record (AWL devices for water surface data)
+    await prisma.alatDashboard.create({
+      data: {
+        ptId,
+        kebunId,
+        deviceType: "TMAS",
+        rusak: tmasStatusCounts.rusak,
+        idle: tmasStatusCounts.idle,
+        active: tmasStatusCounts.active,
+        alert: tmasStatusCounts.alert,
+      },
+    });
+
+    // Create TMAT dashboard record (AWL devices for water table data)
+    await prisma.alatDashboard.create({
+      data: {
+        ptId,
+        kebunId,
+        deviceType: "TMAT",
+        rusak: tmatStatusCounts.rusak,
+        idle: tmatStatusCounts.idle,
+        active: tmatStatusCounts.active,
+        alert: tmatStatusCounts.alert,
+      },
+    });
+
     console.log(`Created dashboard records for PT ${ptId}, Kebun ${kebunId}:`);
     console.log(
-      `  AWL - Active: ${awlStatusCounts.active}, Alert: ${awlStatusCounts.alert}, Rusak: ${awlStatusCounts.rusak}, Idle: ${awlStatusCounts.idle}`
+      `  AWS - Active: ${awsStatusCounts.active}, Alert: ${awsStatusCounts.alert}, Rusak: ${awsStatusCounts.rusak}, Idle: ${awsStatusCounts.idle}`
     );
     console.log(
-      `  AWS - Active: ${awsStatusCounts.active}, Alert: ${awsStatusCounts.alert}, Rusak: ${awsStatusCounts.rusak}, Idle: ${awsStatusCounts.idle}`
+      `  TMAS - Active: ${tmasStatusCounts.active}, Alert: ${tmasStatusCounts.alert}, Rusak: ${tmasStatusCounts.rusak}, Idle: ${tmasStatusCounts.idle}`
+    );
+    console.log(
+      `  TMAT - Active: ${tmatStatusCounts.active}, Alert: ${tmatStatusCounts.alert}, Rusak: ${tmatStatusCounts.rusak}, Idle: ${tmatStatusCounts.idle}`
     );
   }
 
@@ -311,7 +361,7 @@ async function main() {
 
   const weatherDataRecords: any[] = [];
 
-  // Generate data for each AWS device that is active
+  // Generate data for each AWS device that is active (only AWS handles weather data)
   const activeAWSDevices = createdAWSDevices.filter(
     (device) => device.status === "active"
   );
@@ -362,15 +412,15 @@ async function main() {
 
   const tmasDataRecords: any[] = [];
 
-  // Generate data for each AWL device that is active
-  const activeAWLDevices = createdAWLDevices.filter(
-    (device) => device.status === "active"
+  // Generate data for each TMAS device that is active (AWL devices with type TMAS)
+  const activeTMASDevices = createdAWLDevices.filter(
+    (device) => device.status === "active" && device.type === "TMAS"
   );
   console.log(
-    `Found ${activeAWLDevices.length} active AWL devices for TMASData generation`
+    `Found ${activeTMASDevices.length} active TMAS devices for TMASData generation`
   );
 
-  for (const awlDevice of activeAWLDevices) {
+  for (const tmasDevice of activeTMASDevices) {
     // Base water level for this specific device (0-120 cm range, convert to meters)
     let baseLevel = randomBetween(0.3, 0.9); // 30-90 cm base level
 
@@ -387,8 +437,8 @@ async function main() {
       tmasDataRecords.push({
         tanggal: getTargetDateTime(hour), // Use full DateTime
         ketinggian: finalLevel,
-        kebunId: awlDevice.kebunId,
-        awlId: awlDevice.id, // Link to specific AWL device
+        kebunId: tmasDevice.kebunId,
+        awlId: tmasDevice.id, // Link to specific AWL device
       });
     }
   }
@@ -400,8 +450,51 @@ async function main() {
     await prisma.tMASData.create({ data: tmas });
   }
 
+  // Create TMATData records for September 25, 2025 (hourly data for each TMAT device)
+  console.log("Seeding TMATData...");
+
+  const tmatDataRecords: any[] = [];
+
+  // Generate TMAT data for each TMAT device that is active (AWL devices with type TMAT)
+  const activeTMATDevices = createdAWLDevices.filter(
+    (device) => device.status === "active" && device.type === "TMAT"
+  );
+  console.log(
+    `Found ${activeTMATDevices.length} active TMAT devices for TMATData generation`
+  );
+
+  for (const tmatDevice of activeTMATDevices) {
+    // Base water table level for this specific device (0-100% range)
+    const baseLevel = randomBetween(40, 80); // 40-80% base level
+
+    for (let hour = 0; hour < 24; hour++) {
+      // Water table level varies throughout the day with realistic patterns
+      const timeOfDayVariation =
+        Math.sin(((hour - 12) / 24) * 2 * Math.PI) * 10; // 10% variation
+      const randomVariation = randomBetween(-5, 5); // 5% random variation
+      const currentLevel = baseLevel + timeOfDayVariation + randomVariation;
+
+      // Ensure level stays within 0-100% range
+      const finalLevel = Math.max(0, Math.min(100, currentLevel));
+
+      tmatDataRecords.push({
+        tanggal: getTargetDateTime(hour), // Use full DateTime
+        ketinggian: finalLevel,
+        kebunId: tmatDevice.kebunId,
+        awlId: tmatDevice.id, // Use awlId since TMAT is handled by AWL devices
+      });
+    }
+  }
+
+  console.log(`Generated ${tmatDataRecords.length} TMATData records`);
+
+  // Batch insert TMAT data for performance
+  for (const tmat of tmatDataRecords) {
+    await prisma.tMATData.create({ data: tmat });
+  }
+
   // Calculate total dashboard records created
-  const totalDashboardRecords = uniqueCombinations.size * 2; // 2 device types per combination
+  const totalDashboardRecords = uniqueCombinations.size * 3; // 3 device types per combination (AWL, TMAT, AWS)
 
   // Print summary
   console.log("\n=== SEED SUMMARY ===");
@@ -410,21 +503,27 @@ async function main() {
   console.log(`✅ Created ${createdAWSDevices.length} AWS devices`);
   console.log(`✅ Created ${createdAWLDevices.length} AWL devices`);
   console.log(
-    `✅ Created ${totalDashboardRecords} AlatDashboard records (${uniqueCombinations.size} PT-Kebun combinations × 2 device types)`
+    `✅ Created ${totalDashboardRecords} AlatDashboard records (${uniqueCombinations.size} PT-Kebun combinations × 3 device types)`
   );
 
   const activeAWSCount = createdAWSDevices.filter(
     (d) => d.status === "active"
   ).length;
-  const activeAWLCount = createdAWLDevices.filter(
-    (d) => d.status === "active"
+  const activeTMASCount = createdAWLDevices.filter(
+    (d) => d.status === "active" && d.type === "TMAS"
+  ).length;
+  const activeTMATCount = createdAWLDevices.filter(
+    (d) => d.status === "active" && d.type === "TMAT"
   ).length;
 
   console.log(
     `✅ Created ${weatherDataRecords.length} WeatherData records (${activeAWSCount} active AWS devices × 24 hours)`
   );
   console.log(
-    `✅ Created ${tmasDataRecords.length} TMASData records (${activeAWLCount} active AWL devices × 24 hours)`
+    `✅ Created ${tmasDataRecords.length} TMASData records (${activeTMASCount} active TMAS devices × 24 hours)`
+  );
+  console.log(
+    `✅ Created ${tmatDataRecords.length} TMATData records (${activeTMATCount} active TMAT devices × 24 hours)`
   );
 
   // Status distribution
@@ -443,25 +542,40 @@ async function main() {
   });
 
   // Device type distribution
+  const totalTMASDevices = createdAWLDevices.filter(
+    (d) => d.type === "TMAS"
+  ).length;
+  const totalTMATDevices = createdAWLDevices.filter(
+    (d) => d.type === "TMAT"
+  ).length;
+
   console.log("\nDevice Type Distribution:");
-  console.log(`  AWL: ${createdAWLDevices.length} devices`);
-  console.log(`  AWS: ${createdAWSDevices.length} devices`);
+  console.log(`  AWS: ${createdAWSDevices.length} devices (weather data only)`);
+  console.log(`  TMAS (AWL): ${totalTMASDevices} devices (water surface data)`);
+  console.log(`  TMAT (AWL): ${totalTMATDevices} devices (water table data)`);
+  console.log(
+    `  Total AWL: ${createdAWLDevices.length} devices (${totalTMASDevices} TMAS + ${totalTMATDevices} TMAT)`
+  );
 
   console.log("\nDashboard Records Created:");
   console.log(`  Total records: ${totalDashboardRecords}`);
   console.log(`  PT-Kebun combinations: ${uniqueCombinations.size}`);
   console.log(
-    `  Each combination has separate AWL and AWS dashboard aggregations`
+    `  Each combination has separate AWS, TMAS, and TMAT dashboard aggregations`
   );
 
   console.log("\nData Generation Details:");
   console.log(`  Target Date: September 25, 2025`);
   console.log(
-    `  Total Device-Hours: ${(activeAWSCount + activeAWLCount) * 24}`
+    `  Total Device-Hours: ${
+      (activeAWSCount + activeTMASCount + activeTMATCount) * 24
+    }`
   );
   console.log(
     `  Expected Total Records: ${
-      weatherDataRecords.length + tmasDataRecords.length
+      weatherDataRecords.length +
+      tmasDataRecords.length +
+      tmatDataRecords.length
     }`
   );
 

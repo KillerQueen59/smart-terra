@@ -16,6 +16,7 @@ export const useAwlImpl = () => {
   const [pt, setPt] = useState("");
   const [kebun, setKebun] = useState("");
   const [status, setStatus] = useState("");
+  const [type, setType] = useState("");
   const [region, setRegion] = useState("");
   const [pts, setPts] = useState<Options[]>([]);
   const [kebuns, setKebuns] = useState<Options[]>([]);
@@ -123,6 +124,13 @@ export const useAwlImpl = () => {
       });
     }
 
+    // Filter by Type if selected
+    if (type && type !== "") {
+      filteredData = filteredData.filter((device: any) => {
+        return device.type === type;
+      });
+    }
+
     // Filter by Region if selected (based on PT for now)
     if (region && region !== "") {
       filteredData = filteredData.filter((device: any) => {
@@ -132,20 +140,21 @@ export const useAwlImpl = () => {
 
     setAWL(filteredData);
     console.log("Filtered AWL data:", filteredData);
-    console.log("Applied filters:", { pt, kebun, status, region });
-  }, [pt, kebun, status, region, allAwl]);
+    console.log("Applied filters:", { pt, kebun, status, type, region });
+  }, [pt, kebun, status, type, region, allAwl]);
 
   useEffect(() => {
     getAWLData();
     getPTData();
     getKebunData();
-  }, []);
+  }, [getAWLData, getPTData, getKebunData]);
 
   return {
     awl,
     pt: pt || "All",
     kebun: kebun || "All",
     status: status || "All",
+    type: type || "All",
     region: region || "All",
     pts,
     kebuns,
@@ -160,6 +169,9 @@ export const useAwlImpl = () => {
     },
     setStatus: (value: string) => {
       setStatus(value);
+    },
+    setType: (value: string) => {
+      setType(value);
     },
     setRegion: (value: string) => {
       setRegion(value);
