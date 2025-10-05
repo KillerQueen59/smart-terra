@@ -44,7 +44,7 @@ export default function Register() {
       <ToastContainer />
       <div className="flex space-x-1.5 mb-12 w-fit mx-auto">
         <Image
-          src="/smart_terra_logo.svg"
+          src="/smart_terra_logo_full.svg"
           alt="Smart Terra Logo"
           width={135}
           height={84}
