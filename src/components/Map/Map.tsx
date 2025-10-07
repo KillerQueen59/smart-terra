@@ -13,8 +13,6 @@ import {
   ZoomControl,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import georaster from "georaster";
-import GeoRasterLayer from "georaster-layer-for-leaflet";
 import L from "leaflet";
 import { ChevronLeftOutline } from "heroicons-react";
 import { useRouter } from "next/navigation";
@@ -27,14 +25,6 @@ import {
   resultSangatBerat,
 } from "@/dummy/DummyResult";
 
-// Fix for leaflet default icons in Next.js
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "/marker.svg",
-  iconUrl: "/marker.svg",
-  shadowUrl: null,
-});
-
 const TiffMap = () => {
   const router = useRouter();
   const mapRef = React.useRef<any>();
@@ -44,6 +34,18 @@ const TiffMap = () => {
   const [aws, setAWS] = useState<any[]>([]);
   const [awl, setAWL] = useState<any[]>([]);
   const [isResult, setIsResult] = useState(false);
+
+  // Fix for leaflet default icons in Next.js - moved to useEffect
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      delete (L.Icon.Default.prototype as any)._getIconUrl;
+      L.Icon.Default.mergeOptions({
+        iconRetinaUrl: "/marker.svg",
+        iconUrl: "/marker.svg",
+        shadowUrl: null,
+      });
+    }
+  }, []);
 
   const getAWSData = useCallback(async () => {
     setIsLoading(true);
@@ -113,6 +115,14 @@ const TiffMap = () => {
           reader.onload = async (e: any) => {
             const arrayBuffer = e.target.result;
             try {
+              // Dynamic import to avoid Turbopack issues
+              const [georaster, GeoRasterLayer] = await Promise.all([
+                import("georaster").then((mod) => mod.default),
+                import("georaster-layer-for-leaflet").then(
+                  (mod) => mod.default
+                ),
+              ]);
+
               const raster = await georaster(arrayBuffer);
               const geoRasterLayer = new GeoRasterLayer({
                 georaster: raster,
