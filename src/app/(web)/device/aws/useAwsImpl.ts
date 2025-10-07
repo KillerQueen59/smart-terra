@@ -20,10 +20,10 @@ export const useAwsImpl = () => {
   const [pts, setPts] = useState<Options[]>([]);
   const [kebun, setKebun] = useState("");
   const [kebuns, setKebuns] = useState<Options[]>([]);
-  const [allKebuns, setAllKebuns] = useState<Options[]>([]); // Store all kebuns for filtering
+  const [allKebuns, setAllKebuns] = useState<Options[]>([]);
   const [device, setDevice] = useState("");
   const [devices, setDevices] = useState<Options[]>([]);
-  const [allDevices, setAllDevices] = useState([]); // Store all devices for filtering
+  const [allDevices, setAllDevices] = useState([]);
   const [aws, setAWS] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -115,7 +115,6 @@ export const useAwsImpl = () => {
     setIsLoading(true);
     getAWS()
       .then((res) => {
-        console.log("Raw AWS response:", res);
         if (res?.data) {
           setAWS(res.data);
         }
@@ -184,8 +183,92 @@ export const useAwsImpl = () => {
     return true;
   });
 
+  // Group data by hour and calculate averages for duplicates
+  const groupedByHour = filteredAws.reduce((acc: any, data: any) => {
+    const hour = dayjs(data.tanggal).format("HH:mm");
+
+    if (!acc[hour]) {
+      acc[hour] = {
+        items: [],
+        count: 0,
+      };
+    }
+
+    acc[hour].items.push(data);
+    acc[hour].count++;
+
+    return acc;
+  }, {});
+
+  // Calculate averages for each hour
+  const aggregatedAws = Object.keys(groupedByHour).map((hour) => {
+    const group = groupedByHour[hour];
+    const items = group.items;
+
+    // If only one item, return it as is
+    if (items.length === 1) {
+      return items[0];
+    }
+
+    const averagedData = {
+      ...items[0], // Use the first item as base, keeping non-numeric fields
+      suhuRataRata:
+        items.reduce(
+          (sum: number, item: any) => sum + (item.suhuRataRata || 0),
+          0
+        ) / items.length,
+      ch:
+        items.reduce((sum: number, item: any) => sum + (item.ch || 0), 0) /
+        items.length,
+      kelembabanRelatif:
+        items.reduce(
+          (sum: number, item: any) => sum + (item.kelembabanRelatif || 0),
+          0
+        ) / items.length,
+      tekananUdara:
+        items.reduce(
+          (sum: number, item: any) => sum + (item.tekananUdara || 0),
+          0
+        ) / items.length,
+      windSpeed:
+        items.reduce(
+          (sum: number, item: any) => sum + (item.windSpeed || 0),
+          0
+        ) / items.length,
+      windDirec:
+        items.reduce(
+          (sum: number, item: any) => sum + (item.windDirec || 0),
+          0
+        ) / items.length,
+      suhuMinimal:
+        items.reduce(
+          (sum: number, item: any) => sum + (item.suhuMinimal || 0),
+          0
+        ) / items.length,
+      suhuMaksimal:
+        items.reduce(
+          (sum: number, item: any) => sum + (item.suhuMaksimal || 0),
+          0
+        ) / items.length,
+      evapotranspirasi:
+        items.reduce(
+          (sum: number, item: any) => sum + (item.evapotranspirasi || 0),
+          0
+        ) / items.length,
+      radiasiSolarPanel:
+        items.reduce(
+          (sum: number, item: any) => sum + (item.radiasiSolarPanel || 0),
+          0
+        ) / items.length,
+      // Set timestamp to the earliest time for this hour
+      tanggal: items[0].tanggal,
+    };
+
+    return averagedData;
+  });
+
   // Sort by datetime for better visualization
-  const sortedAws = filteredAws.sort((a: any, b: any) => {
+  const sortedAws = aggregatedAws.sort((a: any, b: any) => {
     return new Date(a.tanggal).getTime() - new Date(b.tanggal).getTime();
   });
 
@@ -197,7 +280,7 @@ export const useAwsImpl = () => {
     pt: pt || "All",
     aws: sortedAws,
     labels: sortedAws.map((data: any) => {
-      // Create hourly labels from DateTime
+      // Create hourly labels from DateTime - now unique after aggregation
       const dateTime = dayjs(data.tanggal);
       return dateTime.format("HH:mm"); // Show only time (HH:mm format)
     }),

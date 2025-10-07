@@ -69,11 +69,11 @@ export const useTmasImpl = () => {
       .then((res) => {
         if (res?.data) {
           setDevices([
-            { label: "All", value: "" }, // Add "All" option
+            { label: "All", value: "" },
             ...res.data
-              .filter((item: any) => item.type === "AWL") // Only AWL devices for TMAS
+              .filter((item: any) => item.type === "AWL")
               .map((item: any) => ({
-                label: `${item.name} - ${item.kebunName}`, // Show device name with kebun
+                label: `${item.name} - ${item.kebunName}`,
                 value: item.name,
                 kebunName: item.kebunName,
               })),
@@ -134,8 +134,55 @@ export const useTmasImpl = () => {
     return true;
   });
 
+  // Group data by hour and calculate averages for duplicates
+  const groupedByHour = filteredTmas.reduce((acc: any, data: any) => {
+    const hour = dayjs(data.tanggal).format("HH:mm");
+
+    if (!acc[hour]) {
+      acc[hour] = {
+        items: [],
+        count: 0,
+      };
+    }
+
+    acc[hour].items.push(data);
+    acc[hour].count++;
+
+    return acc;
+  }, {});
+
+  console.log("TMAS Grouped by hour:", groupedByHour);
+
+  // Calculate averages for each hour
+  const aggregatedTmas = Object.keys(groupedByHour).map((hour) => {
+    const group = groupedByHour[hour];
+    const items = group.items;
+
+    // If only one item, return it as is
+    if (items.length === 1) {
+      return items[0];
+    }
+
+    // Log when we're averaging duplicate hours
+    console.log(`Averaging ${items.length} TMAS entries for hour ${hour}`);
+
+    // Calculate averages for numeric fields
+    const averagedData = {
+      ...items[0], // Use the first item as base, keeping non-numeric fields
+      ketinggian:
+        items.reduce(
+          (sum: number, item: any) => sum + (item.ketinggian || 0),
+          0
+        ) / items.length,
+      // Set timestamp to the earliest time for this hour
+      tanggal: items[0].tanggal,
+    };
+
+    return averagedData;
+  });
+
   // Sort by datetime for better visualization
-  const sortedTmas = filteredTmas.sort((a: any, b: any) => {
+  const sortedTmas = aggregatedTmas.sort((a: any, b: any) => {
     return new Date(a.tanggal).getTime() - new Date(b.tanggal).getTime();
   });
 
@@ -153,7 +200,7 @@ export const useTmasImpl = () => {
     pt: pt || "All",
     tmas: sortedTmas,
     labels: sortedTmas.map((data: any) => {
-      // Create hourly labels from DateTime
+      // Create hourly labels from DateTime - now unique after aggregation
       const dateTime = dayjs(data.tanggal);
       return dateTime.format("HH:mm"); // Show only time (HH:mm format)
     }),

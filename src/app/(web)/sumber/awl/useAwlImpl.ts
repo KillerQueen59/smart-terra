@@ -11,7 +11,7 @@ interface Options {
 
 export const useAwlImpl = () => {
   const [awl, setAWL] = useState<Options[]>([]);
-  const [allAwl, setAllAwl] = useState<Options[]>([]); // Store all AWL data for filtering
+  const [allAwl, setAllAwl] = useState<Options[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [pt, setPt] = useState("");
   const [kebun, setKebun] = useState("");
@@ -20,7 +20,7 @@ export const useAwlImpl = () => {
   const [region, setRegion] = useState("");
   const [pts, setPts] = useState<Options[]>([]);
   const [kebuns, setKebuns] = useState<Options[]>([]);
-  const [allKebuns, setAllKebuns] = useState<Options[]>([]); // Store all kebuns for filtering
+  const [allKebuns, setAllKebuns] = useState<Options[]>([]);
 
   const getAWLData = useCallback(() => {
     setIsLoading(true);
@@ -64,12 +64,11 @@ export const useAwlImpl = () => {
           const kebunData = res.data.map((item: any) => ({
             label: item.name,
             value: item.name,
-            ptName: item.pt?.name || "", // Store PT relationship
+            ptName: item.pt?.name || "",
           }));
 
-          setAllKebuns(kebunData); // Store all kebuns
+          setAllKebuns(kebunData);
 
-          // Set initial kebuns (empty if no PT selected)
           if (!pt) {
             setKebuns([
               { label: "Select PT first", value: "", disabled: true },
@@ -87,7 +86,6 @@ export const useAwlImpl = () => {
       });
   }, [pt]);
 
-  // Update kebuns when PT changes
   useEffect(() => {
     if (pt && allKebuns.length > 0) {
       const filteredKebuns = allKebuns.filter(
@@ -139,8 +137,6 @@ export const useAwlImpl = () => {
     }
 
     setAWL(filteredData);
-    console.log("Filtered AWL data:", filteredData);
-    console.log("Applied filters:", { pt, kebun, status, type, region });
   }, [pt, kebun, status, type, region, allAwl]);
 
   useEffect(() => {

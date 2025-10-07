@@ -94,8 +94,6 @@ export const useDashboardImpl = () => {
       kebun: kebun || undefined,
     };
 
-    console.log("Fetching dashboard with filters:", filters);
-
     // Fetch AWL, AWS, and TMAT data simultaneously
     Promise.all([
       getAWLDashboard(filters),
@@ -103,10 +101,6 @@ export const useDashboardImpl = () => {
       getTMATDashboard(filters),
     ])
       .then(([awlRes, awsRes, tmatRes]) => {
-        console.log("AWL Response:", awlRes);
-        console.log("AWS Response:", awsRes);
-        console.log("TMAT Response:", tmatRes);
-
         if (awlRes?.data) {
           setAwlDashboards(awlRes.data);
         } else {
@@ -136,7 +130,6 @@ export const useDashboardImpl = () => {
 
   // Separate dashboard data for AWL and AWS
   const awlDashboard = useMemo(() => {
-    console.log("Converting AWL dashboards:", awlDashboards);
     if (awlDashboards.length > 0) {
       return convertToLabelValue(awlDashboards, kebun);
     }
@@ -144,7 +137,6 @@ export const useDashboardImpl = () => {
   }, [awlDashboards, kebun]);
 
   const awsDashboard = useMemo(() => {
-    console.log("Converting AWS dashboards:", awsDashboards);
     if (awsDashboards.length > 0) {
       return convertToLabelValue(awsDashboards, kebun);
     }
@@ -152,7 +144,6 @@ export const useDashboardImpl = () => {
   }, [awsDashboards, kebun]);
 
   const tmatDashboard = useMemo(() => {
-    console.log("Converting TMAT dashboards:", tmatDashboards);
     if (tmatDashboards.length > 0) {
       return convertToLabelValue(tmatDashboards, kebun);
     }
@@ -162,7 +153,6 @@ export const useDashboardImpl = () => {
   // Handle PT change
   const handlePtChange = useCallback(
     (newPt: string) => {
-      console.log("PT changed to:", newPt);
       setPt(newPt);
       // Reset kebun when PT changes and reload kebun options
       setKebun("");
@@ -173,13 +163,11 @@ export const useDashboardImpl = () => {
 
   // Handle Kebun change
   const handleKebunChange = useCallback((newKebun: string) => {
-    console.log("Kebun changed to:", newKebun);
     setKebun(newKebun);
   }, []);
 
   // Initial data load
   useEffect(() => {
-    console.log("Initial data load");
     getPTData();
     getKebunData();
   }, [getPTData, getKebunData]);
@@ -188,7 +176,6 @@ export const useDashboardImpl = () => {
   useEffect(() => {
     // Only fetch dashboard data after initial PT data is loaded
     if (pts.length > 0) {
-      console.log("Reloading dashboard data due to filter change");
       getDashboardData();
     }
   }, [pt, kebun, pts.length, getDashboardData]);

@@ -154,8 +154,7 @@ export default function TMAS() {
                   title="Tinggi Muka Air Saluran"
                   data={[
                     tmas.map((data: any) => {
-                      // Convert from meters to centimeters for display
-                      return data.ketinggian * 100;
+                      return data.ketinggian;
                     }),
                   ]}
                   xAxisTitle="Jam"

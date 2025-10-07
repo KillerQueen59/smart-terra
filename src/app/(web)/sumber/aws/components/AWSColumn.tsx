@@ -61,7 +61,10 @@ const AWSColumn = (
           </div>
         ),
         minSize: Math.round((global?.window && window.innerHeight - 55) * 0.2),
-        cell: (info) => <div>{date(info.row.original.startDate ?? "")}</div>,
+        cell: (info) => {
+          const startDate = info.row.original.startDate;
+          return <div>{date(startDate ?? "")}</div>;
+        },
       },
       {
         accessorKey: "battery",
@@ -116,8 +119,8 @@ const AWSColumn = (
       {
         accessorKey: "action",
         header: () => <span className="text-xs text-gray-80">ACTION</span>,
-        minSize: Math.round((global?.window && window.innerHeight - 55) * 0.1),
-        cell: (info) => {
+        minSize: Math.round((global?.window && window.innerWidth - 55) * 0.1),
+        cell: () => {
           return (
             <div className="flex justify-center cursor-pointer">
               <TableActionDropdown
@@ -145,7 +148,7 @@ const AWSColumn = (
         },
       },
     ],
-    []
+    [setShowModal]
   );
 
   return columns;

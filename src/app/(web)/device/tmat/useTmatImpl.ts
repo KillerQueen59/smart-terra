@@ -116,8 +116,64 @@ export const useTmatImpl = () => {
     getTmatData();
   }, [getTmatData]);
 
-  // Generate labels for the chart based on data timestamps
-  const labels = tmat.map((item: any) => dayjs(item.tanggal).format("HH:mm"));
+  // Group data by hour and calculate averages for duplicates
+  const groupedByHour = tmat.reduce((acc: any, data: any) => {
+    const hour = dayjs(data.tanggal).format("HH:mm");
+
+    if (!acc[hour]) {
+      acc[hour] = {
+        items: [],
+        count: 0,
+      };
+    }
+
+    acc[hour].items.push(data);
+    acc[hour].count++;
+
+    return acc;
+  }, {});
+
+  console.log("TMAT Grouped by hour:", groupedByHour);
+
+  // Calculate averages for each hour
+  const aggregatedTmat = Object.keys(groupedByHour).map((hour) => {
+    const group = groupedByHour[hour];
+    const items = group.items;
+
+    // If only one item, return it as is
+    if (items.length === 1) {
+      return items[0];
+    }
+
+    // Log when we're averaging duplicate hours
+    console.log(`Averaging ${items.length} TMAT entries for hour ${hour}`);
+
+    // Calculate averages for numeric fields
+    const averagedData = {
+      ...items[0], // Use the first item as base, keeping non-numeric fields
+      ketinggian:
+        items.reduce(
+          (sum: number, item: any) => sum + (item.ketinggian || 0),
+          0
+        ) / items.length,
+      // Set timestamp to the earliest time for this hour
+      tanggal: items[0].tanggal,
+    };
+
+    return averagedData;
+  });
+
+  // Sort by datetime for better visualization
+  const sortedTmat = aggregatedTmat.sort((a: any, b: any) => {
+    return new Date(a.tanggal).getTime() - new Date(b.tanggal).getTime();
+  });
+
+  console.log("Filtered and sorted TMAT data:", sortedTmat);
+
+  // Generate labels for the chart based on aggregated data timestamps - now unique after aggregation
+  const labels = sortedTmat.map((item: any) =>
+    dayjs(item.tanggal).format("HH:mm")
+  );
 
   return {
     pt,
@@ -129,7 +185,7 @@ export const useTmatImpl = () => {
     device,
     setDevice,
     devices,
-    tmat,
+    tmat: sortedTmat,
     labels,
     loading: isLoading,
     selectedDate,

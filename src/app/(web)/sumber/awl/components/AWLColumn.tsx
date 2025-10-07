@@ -75,15 +75,7 @@ const AWLColumn = () => {
         minSize: Math.round((global?.window && window.innerHeight - 55) * 0.2),
         cell: (info) => {
           const startDate = info.row.original.startDate;
-          // Handle potential invalid date strings
-          if (!startDate || startDate === "" || startDate === "Invalid Date") {
-            return <div>-</div>;
-          }
-          try {
-            return <div>{date(startDate)}</div>;
-          } catch {
-            return <div>-</div>;
-          }
+          return <div>{date(startDate ?? "")}</div>;
         },
       },
       {

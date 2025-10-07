@@ -154,7 +154,6 @@ export default function TMAT() {
                   title="Tinggi Muka Air Tanah"
                   data={[
                     tmat.map((data: any) => {
-                      // Return the water table level as percentage
                       return data.ketinggian;
                     }),
                   ]}
