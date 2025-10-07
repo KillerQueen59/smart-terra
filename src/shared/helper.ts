@@ -112,10 +112,10 @@ export const convertToLabelValue = (data: any, selectedKebun: any) => {
     });
 
     return [
-      { label: "Rusak", value: totals.rusak },
-      { label: "Idle", value: totals.idle },
       { label: "Active", value: totals.active },
+      { label: "Idle", value: totals.idle },
       { label: "Alert", value: totals.alert },
+      { label: "Rusak", value: totals.rusak },
     ];
   }
 
@@ -129,17 +129,17 @@ export const convertToLabelValue = (data: any, selectedKebun: any) => {
 
   if (entry) {
     return [
-      { label: "Rusak", value: entry.rusak || 0 },
-      { label: "Idle", value: entry.idle || 0 },
       { label: "Active", value: entry.active || 0 },
+      { label: "Idle", value: entry.idle || 0 },
       { label: "Alert", value: entry.alert || 0 },
+      { label: "Rusak", value: entry.rusak || 0 },
     ];
   }
 
   return [
-    { label: "Rusak", value: 0 },
-    { label: "Idle", value: 0 },
     { label: "Active", value: 0 },
+    { label: "Idle", value: 0 },
     { label: "Alert", value: 0 },
+    { label: "Rusak", value: 0 },
   ];
 };

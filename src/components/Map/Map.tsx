@@ -4,7 +4,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import {
   FeatureGroup,
-  LayersControl,
   MapContainer,
   Marker,
   Popup,
@@ -34,6 +33,13 @@ const TiffMap = () => {
   const [aws, setAWS] = useState<any[]>([]);
   const [awl, setAWL] = useState<any[]>([]);
   const [isResult, setIsResult] = useState(false);
+
+  // Result layer visibility states
+  const [showSangatTinggi, setShowSangatTinggi] = useState(true);
+  const [showTinggi, setShowTinggi] = useState(true);
+  const [showSedang, setShowSedang] = useState(true);
+  const [showRendah, setShowRendah] = useState(true);
+  const [showSangatRendah, setShowSangatRendah] = useState(true);
 
   // Fix for leaflet default icons in Next.js - moved to useEffect
   useEffect(() => {
@@ -326,6 +332,124 @@ const TiffMap = () => {
         </div>
       </div>
 
+      {/* Analysis Result Layers Panel - Top Right */}
+      {isResult && (
+        <div
+          className="absolute z-50 p-4 bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl border border-gray-200"
+          style={{
+            top: "20px",
+            right: "20px",
+            minWidth: "280px",
+            maxWidth: "320px",
+          }}>
+          <h4 className="text-sm font-semibold text-gray-800 uppercase tracking-wide mb-4">
+            Analysis Result Layers
+          </h4>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-green-500 rounded"></div>
+                <span className="text-sm text-gray-700">
+                  Sangat Tinggi (80 - 100%)
+                </span>
+              </div>
+              <button
+                onClick={() => setShowSangatTinggi(!showSangatTinggi)}
+                className={`w-8 h-4 rounded-full transition-colors ${
+                  showSangatTinggi ? "bg-green-500" : "bg-gray-300"
+                }`}>
+                <div
+                  className={`w-3 h-3 bg-white rounded-full transition-transform ${
+                    showSangatTinggi ? "translate-x-4" : "translate-x-0"
+                  }`}></div>
+              </button>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <div
+                  className="w-3 h-3 rounded"
+                  style={{ backgroundColor: "#b7de1b" }}></div>
+                <span className="text-sm text-gray-700">Tinggi (60 - 80%)</span>
+              </div>
+              <button
+                onClick={() => setShowTinggi(!showTinggi)}
+                className="w-8 h-4 rounded-full transition-colors"
+                style={{
+                  backgroundColor: showTinggi ? "#b7de1b" : "#d1d5db",
+                }}>
+                <div
+                  className={`w-3 h-3 bg-white rounded-full transition-transform ${
+                    showTinggi ? "translate-x-4" : "translate-x-0"
+                  }`}></div>
+              </button>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <div
+                  className="w-3 h-3 rounded"
+                  style={{ backgroundColor: "#a4a832" }}></div>
+                <span className="text-sm text-gray-700">Sedang (40 - 60%)</span>
+              </div>
+              <button
+                onClick={() => setShowSedang(!showSedang)}
+                className="w-8 h-4 rounded-full transition-colors"
+                style={{
+                  backgroundColor: showSedang ? "#a4a832" : "#d1d5db",
+                }}>
+                <div
+                  className={`w-3 h-3 bg-white rounded-full transition-transform ${
+                    showSedang ? "translate-x-4" : "translate-x-0"
+                  }`}></div>
+              </button>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <div
+                  className="w-3 h-3 rounded"
+                  style={{ backgroundColor: "#db6b0f" }}></div>
+                <span className="text-sm text-gray-700">Rendah (20 - 40%)</span>
+              </div>
+              <button
+                onClick={() => setShowRendah(!showRendah)}
+                className="w-8 h-4 rounded-full transition-colors"
+                style={{
+                  backgroundColor: showRendah ? "#db6b0f" : "#d1d5db",
+                }}>
+                <div
+                  className={`w-3 h-3 bg-white rounded-full transition-transform ${
+                    showRendah ? "translate-x-4" : "translate-x-0"
+                  }`}></div>
+              </button>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <div
+                  className="w-3 h-3 rounded"
+                  style={{ backgroundColor: "#e62102" }}></div>
+                <span className="text-sm text-gray-700">
+                  Sangat Rendah (&lt; 20%)
+                </span>
+              </div>
+              <button
+                onClick={() => setShowSangatRendah(!showSangatRendah)}
+                className="w-8 h-4 rounded-full transition-colors"
+                style={{
+                  backgroundColor: showSangatRendah ? "#e62102" : "#d1d5db",
+                }}>
+                <div
+                  className={`w-3 h-3 bg-white rounded-full transition-transform ${
+                    showSangatRendah ? "translate-x-4" : "translate-x-0"
+                  }`}></div>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Map */}
       {!isLoading && (
         <MapContainer
@@ -348,29 +472,22 @@ const TiffMap = () => {
             subdomains={["mt0", "mt1", "mt2", "mt3"]}
           />
           <ZoomControl position="bottomright" />
-          {isResult && (
-            <LayersControl position="topright">
-              {/* Overlay layers */}
-              <LayersControl.Overlay checked name="Sangat Tinggi (80 - 100%)">
-                <JSONResult data={resultSangatBerat} map={mapRef.current} />
-              </LayersControl.Overlay>
 
-              <LayersControl.Overlay checked name="Tinggi (60 - 80%)">
-                <JSONResult data={resultBerat} map={mapRef.current} />
-              </LayersControl.Overlay>
-
-              <LayersControl.Overlay checked name="Sedang (40 - 60%)">
-                <JSONResult data={resultSedang} map={mapRef.current} />
-              </LayersControl.Overlay>
-
-              <LayersControl.Overlay checked name="Rendah (20 - 40%)">
-                <JSONResult data={resultRendah} map={mapRef.current} />
-              </LayersControl.Overlay>
-
-              <LayersControl.Overlay checked name="Sangat Rendah (< 20%)">
-                <JSONResult data={resultSangatRendah} map={mapRef.current} />
-              </LayersControl.Overlay>
-            </LayersControl>
+          {/* Analysis Result Layers - conditionally rendered */}
+          {isResult && showSangatTinggi && (
+            <JSONResult data={resultSangatBerat} map={mapRef.current} />
+          )}
+          {isResult && showTinggi && (
+            <JSONResult data={resultBerat} map={mapRef.current} />
+          )}
+          {isResult && showSedang && (
+            <JSONResult data={resultSedang} map={mapRef.current} />
+          )}
+          {isResult && showRendah && (
+            <JSONResult data={resultRendah} map={mapRef.current} />
+          )}
+          {isResult && showSangatRendah && (
+            <JSONResult data={resultSangatRendah} map={mapRef.current} />
           )}
 
           {/* Always show markers regardless of data loading state */}
@@ -410,9 +527,10 @@ const JSONResult = ({ data, map }: any) => {
 
     return {
       color: color,
-      weight: 2,
-      opacity: 1,
-      fillOpacity: 0.5,
+      weight: 0,
+      opacity: 0,
+      fillOpacity: 0.8,
+      stroke: false,
     };
   };
 

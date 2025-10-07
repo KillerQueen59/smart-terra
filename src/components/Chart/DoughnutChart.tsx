@@ -54,7 +54,8 @@ function DoughnutChart({
     0
   );
 
-  data.sort((a: any, b: any) => b.value - a.value);
+  // Remove automatic sorting to maintain custom order
+  // data.sort((a: any, b: any) => b.value - a.value);
 
   const datas = {
     datasets: [

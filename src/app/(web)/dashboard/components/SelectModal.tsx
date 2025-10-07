@@ -13,7 +13,7 @@ const SelectModal = ({
   return (
     show && (
       <div
-        className="z-10 fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center "
+        className="z-10 fixed inset-0 bg-black/75 flex justify-center items-center "
         onClick={() => {
           onClose();
         }}>

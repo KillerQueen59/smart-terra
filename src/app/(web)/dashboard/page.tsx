@@ -99,7 +99,7 @@ export default function Dashboard() {
           ) : (
             <DoughnutChart
               title="AWL TMAT (Tinggi Muka Air Tanah)"
-              data={tmatDashboard} // <- Using TMAT-specific data
+              data={tmatDashboard}
               below
               noLine
               className="h-full"
